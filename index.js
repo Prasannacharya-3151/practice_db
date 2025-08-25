@@ -1,4 +1,6 @@
 const express = require("express");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "asdasd123123"
 const { UserModel, TodoModel } = require("./db")
 
 const app = express();
@@ -19,14 +21,27 @@ app.post("/signup", function(rq, res){
     })
 })
 
-app.post("/signin", function(req, res){
+app.post("/signin", async function(req, res){
     const email= req.body.email;
     const password= req.body.password;
 
+    const user = await UserModel.findOne({
+        email: email,
+        password: password
+    })
+
+    console.log(user);
+
     if(user){
-        const token = "";
+        const token = jwt.sign({
+            id: user._id
+        });
         res.json({
-            
+            token:token
+        })
+    } else {
+        res.status(403).json({
+            msg: "incorrect credentials"
         })
     }
 
