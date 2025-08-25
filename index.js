@@ -1,20 +1,23 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "asdasd123123"
+const JWT_SECRET = "asdasd123123";
 const { UserModel, TodoModel } = require("./db")
+// mongoose.connect("")
+const mongoose = require("mongoose")
+
 
 const app = express();
 app.use(express.json());
 
-app.post("/signup", function(rq, res){
+app.post("/signup", async function(req, res){
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
     
-    UserModel.insert({
+    await UserModel.create({
         email:email,
-        pasword:password,
-        name:name
+        password:password,
+        username: username
     })
     res.json({
         msg: "you are logged in"
