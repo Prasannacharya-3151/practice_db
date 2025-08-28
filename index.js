@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt")
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
@@ -14,6 +15,9 @@ app.post("/signup", async function(req, res){
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
+
+    const hashedPassaword =  await bcrypt.hash(password, 10);
+
     
     await UserModel.create({
         email:email,
