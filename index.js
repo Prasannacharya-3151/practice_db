@@ -16,14 +16,14 @@ app.post("/signup", async function(req, res){
     const username = req.body.username;
     const password = req.body.password;
 
-    const hashedPassaword =  await bcrypt.hash(password, 10);
-    console.log(hashedPassaword)
+    const hashedPassword =  await bcrypt.hash(password, 10);
+    console.log(hashedPassword)
 
     
     await UserModel.create({
         email:email,
         username: username,
-        password:hashedPassaword
+        password:hashedPassword
     })
     res.json({
         msg: "you are logged in"
@@ -32,12 +32,13 @@ app.post("/signup", async function(req, res){
 
 app.post("/signin", async function(req, res){
     const email= req.body.email;
+    const password = req.body.password
     
 
     // const isMatch = await bcrypt.compare(password, response.password)
 
-    const user = await UserModel.findOne({
-        email: email,
+    const response = await UserModel.findOne({
+        email: email
         // password: password
         
     })
@@ -48,14 +49,15 @@ app.post("/signin", async function(req, res){
         return
     }
 
-    const isMatch = await bcrypt.compare(password, response.password)
+    const passwordMatch = await bcrypt.compare(password, response.password);
 
-    if(isMatch){
+    if(passwordMatch){
         const token = jwt.sign({
             id: response._id.toString()
         }, JWT_SECRET);
+
         res.json({
-            token:token
+            token
         });
     } else {
         res.status(403).json({
