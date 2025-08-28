@@ -16,19 +16,26 @@ app.post("/signup", async function(req, res){
     const username = req.body.username;
     const password = req.body.password;
 
+try{
     const hashedPassword =  await bcrypt.hash(password, 10);
     console.log(hashedPassword)
 
-    
     await UserModel.create({
         email:email,
         username: username,
         password:hashedPassword
     })
+} catch(e){
+    console.log("error while putting in the db")
     res.json({
-        msg: "you are logged in"
+        msg:"used already exists"
+    })
+}
+    res.json({
+        msg: "you are signed up"
     })
 })
+
 
 app.post("/signin", async function(req, res){
     const email= req.body.email;
