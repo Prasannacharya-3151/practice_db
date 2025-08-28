@@ -4,6 +4,9 @@ const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const JWT_SECRET = "asdasd123123";
 const { UserModel, TodoModel } = require("./db")
+// const {auth, JWT_SECRET} = require("./auth")
+const { z } = require("zod")
+
 mongoose.connect("mongodb+srv://Prasanna:Prasanna%4012345@cluster0.2dzlp9d.mongodb.net/MyDB")
 
 
@@ -12,11 +15,27 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async function(req, res){
+    const requireBody = z.object({
+        email: z.string().min(3).max(100).email(),
+        name: z.string().min(3).max(100),
+        password: z.string().min(6).max(100)
+    })
+    
+    
+    const parseDataWithSuccess = requireBody.safeParse(req.body);
+
+    if(!parseDataWithSuccess.success){
+        res.json({
+            msg:"Invalid request data"
+        })
+        return
+    }
+
+
     const email = req.body.email;
     const username = req.body.username;
     const password = req.body.password;
 
-try{
     const hashedPassword =  await bcrypt.hash(password, 10);
     console.log(hashedPassword)
 
@@ -25,12 +44,7 @@ try{
         username: username,
         password:hashedPassword
     })
-} catch(e){
-    console.log("error while putting in the db")
-    res.json({
-        msg:"used already exists"
-    })
-}
+
     res.json({
         msg: "you are signed up"
     })
