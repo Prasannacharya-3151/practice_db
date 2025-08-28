@@ -32,18 +32,27 @@ app.post("/signup", async function(req, res){
 
 app.post("/signin", async function(req, res){
     const email= req.body.email;
-    const password= req.body.password;
+    
+
+    // const isMatch = await bcrypt.compare(password, response.password)
 
     const user = await UserModel.findOne({
         email: email,
-        password: password
+        // password: password
+        
     })
+    if(!response){
+        res.status(403).json({
+            msg:"user does not exist"
+        })
+        return
+    }
 
-    console.log(user);
+    const isMatch = await bcrypt.compare(password, response.password)
 
-    if(user){
+    if(isMatch){
         const token = jwt.sign({
-            id: user._id
+            id: response._id.toString()
         }, JWT_SECRET);
         res.json({
             token:token
